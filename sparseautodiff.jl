@@ -1,11 +1,9 @@
-using Zygote, Test, LinearAlgebra
-
-import Base: ^, *, +, -, sin, size
-
 #Utility module for the structures we need
 module SparseAutoDiff
 
-export pullback_diagonal,relu
+import Base: ^, *, +, -, sin, size
+
+export pullback_diagonal, relu
 
 #Implementation of Dual numbers
 struct Dual
@@ -46,17 +44,19 @@ function (*)(x::DiagonalMatrix,y::AbstractMatrix)
 end
 
 #Get pullback for diagonal matrix
-pullback_diagonal = function(f, 𝐱)
+pullback_diagonal = function(f, 𝐱; 𝐩 = nothing)
     l = length(𝐱)
     result = Vector{Number}(zeros(eltype(𝐱),l))
     for i=1:l
         𝐲 = Dual.(𝐱,0)
         𝐲[i] = Dual(𝐲[i].a,1)
-        result[i] = f(𝐲)[i].b
+        result[i] = ( 𝐩 === nothing ? f(𝐲)[i].b : f(𝐲,𝐩)[i].b)
     end
-    x = f(𝐱)
+    x = 𝐩 === nothing ? f(𝐱) : f(𝐱,𝐩)
     p(t) = DiagonalMatrix(result)*t
     return x, p
 end
+
+println("Successfully included")
 
 end

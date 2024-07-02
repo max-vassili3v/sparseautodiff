@@ -1,4 +1,5 @@
-include("SparseAutoDiff.jl")
+include("sparseautodiff.jl")
+using .SparseAutoDiff
 
 function gradient_descent(f,n,N,γ)
     𝐱 = rand(n)
@@ -13,4 +14,4 @@ function square_offset(𝐱)
     (𝐱 .- [1, 0, 1]).^2
 end
 
-gradient_descent(square_offset,3,1000,0.1)
+@time gradient_descent(square_offset,3,1000,0.1)
